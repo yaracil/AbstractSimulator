@@ -20,17 +20,17 @@ class FirstSimulator extends AbstractSimulator {
     }
     
     public static void main(String[] args) {
-        new FirstSimulator().start();
+//        new FirstSimulator().start();
     }
     
     void start() {
-        events = new ListQueue();
-        insert( new FirstSimulator(4.0));
-        insert( new FirstSimulator(1.0));
-        insert( new FirstSimulator(1.5));
-        insert( new FirstSimulator(2.0));
-
-        doAllEvents();
+//        events = new ListQueue();
+//        insert( new FirstSimulator(4.0));
+//        insert( new FirstSimulator(1.0));
+//        insert( new FirstSimulator(1.5));
+//        insert( new FirstSimulator(2.0));
+//
+//        doAllEvents();
     }
 
 }
