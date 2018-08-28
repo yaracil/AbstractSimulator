@@ -5,11 +5,12 @@
  */
 package abstractsimulator;
 
+import java.util.Random;
+
 /**
  *
  * @author Yoe
  */
-
 abstract class OrderedSet {
 
     public abstract void insert(Comparable x);
@@ -23,20 +24,49 @@ abstract class OrderedSet {
 
 public class AbstractSimulator {
 
-    public OrderedSet events;
+    Random ran;
+    OrderedSet events;
+    double time;
+    double timeToEnd;
+    String report;
+    double lambda;
+    double miu;
+    int systemCount;
 
-    public double time;
+    public AbstractSimulator(long lambda, long miu) {
+        this.lambda = lambda;
+        this.miu = miu;
+        systemCount = 0;
+        ran = new Random();
+    }
+
+    public void init() {
+        events = new ListQueue();
+        time = 0.0;
+        timeToEnd = 0.0;
+        report = "Abstract Simulator 1.0 Version" + '\n';
+    }
 
     double now() {
         return time;
     }
 
-    void doAllEvents() {
+    public String getReport() {
+        return report;
+    }
+
+    public void run() {
         AbstractEvent e;
         while ((e = (AbstractEvent) events.removeFirst()) != null) {
-            time = e.time;
-            e.execute(this);
+            if (e.getTime() >= timeToEnd) {
+                break;
+            } else {
+                time = e.getTime();
+                e.execute(this);
+                report += "Ha ocurrido el evento " + e.getTag() + "  Tiempo: " + e.getTime() + '\n';
+            }
         }
+        report += "La simulación a finalizado!    Tiempo del último evento: " + time + '\n';
     }
 
     public void insert(AbstractEvent e) {
@@ -45,5 +75,30 @@ public class AbstractSimulator {
 
     public AbstractEvent cancel(AbstractEvent e) {
         throw new java.lang.RuntimeException("Method not implemented");
+    }
+
+    public void setTimeToEnd(double timeToEnd) {
+        this.timeToEnd = timeToEnd;
+    }
+
+    public int getSystemCount() {
+        return systemCount;
+    }
+
+    public void setSystemCount(int systemCount) {
+        this.systemCount = systemCount;
+    }
+
+    public Double getRandomWithPoissonDistribution(Double media) {
+
+        return (Double) (-(1 / media) * Math.log(1 - ran.nextFloat()));
+    }
+
+    public Double getLambda() {
+        return lambda;
+    }
+
+    public Double getMiu() {
+        return miu;
     }
 }

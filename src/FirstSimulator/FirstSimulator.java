@@ -12,25 +12,25 @@ import abstractsimulator.*;
  * @author Yoe
  */
 class FirstSimulator extends AbstractSimulator {
-    FirstSimulator(double time) {
-        this.time = time;
+
+    public FirstSimulator() {
+        // Valores para lambda y miu
+        super(1, 2);
     }
-    public void execute(AbstractSimulator simulator) {
-        System.out.println("The time is "+time);
-    }
-    
+
     public static void main(String[] args) {
-//        new FirstSimulator().start();
+        new FirstSimulator().start();
     }
-    
+
     void start() {
-//        events = new ListQueue();
-//        insert( new FirstSimulator(4.0));
-//        insert( new FirstSimulator(1.0));
-//        insert( new FirstSimulator(1.5));
-//        insert( new FirstSimulator(2.0));
-//
-//        doAllEvents();
+        init();
+        this.setTimeToEnd(100);
+
+        this.insert(new EnqueueEvent(0.1));
+
+        this.run();
+
+        System.out.println(this.getReport());
     }
 
 }

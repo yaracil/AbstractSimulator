@@ -16,11 +16,34 @@ interface Comparable {
 
 public abstract class AbstractEvent implements Comparable {
 
-    public double time;
+    double time;
+    String tag;
+
+    public AbstractEvent(double time) {
+        this.time = time;
+    }
+    
+    
 
     public boolean lessThan(Comparable y) {
         AbstractEvent e = (AbstractEvent) y;  // Will throw an exception if y is not an Event
         return this.time < e.time;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public String getTag() {
+        return tag;
     }
 
     public abstract void execute(AbstractSimulator simulator);
