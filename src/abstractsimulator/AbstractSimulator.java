@@ -9,13 +9,41 @@ package abstractsimulator;
  *
  * @author Yoe
  */
+
+abstract class OrderedSet {
+
+    public abstract void insert(Comparable x);
+
+    public abstract Comparable removeFirst();
+
+    public abstract int size();
+
+    public abstract Comparable remove(Comparable x);
+}
+
 public class AbstractSimulator {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public OrderedSet events;
+
+    public double time;
+
+    double now() {
+        return time;
     }
-    
+
+    void doAllEvents() {
+        AbstractEvent e;
+        while ((e = (AbstractEvent) events.removeFirst()) != null) {
+            time = e.time;
+            e.execute(this);
+        }
+    }
+
+    public void insert(AbstractEvent e) {
+        events.insert(e);
+    }
+
+    public AbstractEvent cancel(AbstractEvent e) {
+        throw new java.lang.RuntimeException("Method not implemented");
+    }
 }
