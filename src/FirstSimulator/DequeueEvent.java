@@ -22,10 +22,9 @@ public class DequeueEvent extends AbstractEvent {
     @Override
     public void execute(AbstractSimulator simulator) {
         int count=simulator.getSystemCount();
-        if (count != 1) {
-            simulator.insert(new DequeueEvent(this.getTime() + simulator.getRandomWithPoissonDistribution(simulator.getMiu())));
-            simulator.setSystemCount(count--);
+        if (count > 1) {
+            simulator.insert(new DequeueEvent(this.getTime() + simulator.getRandomWithPoissonDistribution(simulator.getMiu())));            
         }
+        simulator.setSystemCount(count-1);
     }
-
 }

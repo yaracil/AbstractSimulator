@@ -5,7 +5,11 @@
  */
 package abstractsimulator;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  *
@@ -32,12 +36,14 @@ public class AbstractSimulator {
     double lambda;
     double miu;
     int systemCount;
+    Map<String, Integer> eventsHistogram;
 
-    public AbstractSimulator(long lambda, long miu) {
+    public AbstractSimulator(double lambda, double miu) {
         this.lambda = lambda;
         this.miu = miu;
         systemCount = 0;
         ran = new Random();
+        eventsHistogram = new TreeMap<String, Integer>();
     }
 
     public void init() {
@@ -51,8 +57,20 @@ public class AbstractSimulator {
         return time;
     }
 
-    public String getReport() {
-        return report;
+    public String GenerateReport(boolean extended) {
+
+        String histogram = "";
+        Set<String> keys = eventsHistogram.keySet();
+
+        Iterator<String> it = keys.iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            histogram += "Evento: " + key + " se procesó " + eventsHistogram.get(key) + " veces." + '\n';
+        }
+        if (extended) {
+            histogram=this.report+histogram;
+        }
+        return histogram;
     }
 
     public void run() {
@@ -63,10 +81,15 @@ public class AbstractSimulator {
             } else {
                 time = e.getTime();
                 e.execute(this);
-                report += "Ha ocurrido el evento " + e.getTag() + "  Tiempo: " + e.getTime() + '\n';
+                report += "Ha ocurrido el evento >>>>    " + e.getTag() + "  >>>> Tiempo: " + e.getTime() + "   >>>> Elementos en el sistema: " + this.getSystemCount() + '\n';
+                int count = 0;
+                if (eventsHistogram.containsKey(e.getTag())) {
+                    count = eventsHistogram.get(e.getTag());
+                }
+                eventsHistogram.put(e.getTag(), count + 1);
             }
         }
-        report += "La simulación a finalizado!    Tiempo del último evento: " + time + '\n';
+        report += "\n"+ "La simulación a finalizado!    >>>>    Tiempo del último evento: " + time + '\n';
     }
 
     public void insert(AbstractEvent e) {

@@ -13,24 +13,21 @@ import abstractsimulator.*;
  */
 class FirstSimulator extends AbstractSimulator {
 
-    public FirstSimulator() {
-        // Valores para lambda y miu
-        super(1, 2);
+    public FirstSimulator(double lambda, double miu) {        
+        super(lambda, miu);
     }
 
     public static void main(String[] args) {
-        new FirstSimulator().start();
+        // Valores para lambda y miu por parámetros
+        FirstSimulator simulation= new FirstSimulator(1,2);
+        simulation.start();
+        System.out.println(simulation.GenerateReport(false));
     }
 
     void start() {
-        init();
-        this.setTimeToEnd(100);
-
-        this.insert(new EnqueueEvent(0.1));
-
-        this.run();
-
-        System.out.println(this.getReport());
+        init();        
+        this.setTimeToEnd(1000);
+        this.insert(new EnqueueEvent(0.001));
+        this.run();       
     }
-
 }

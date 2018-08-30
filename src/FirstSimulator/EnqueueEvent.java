@@ -23,11 +23,9 @@ public class EnqueueEvent extends AbstractEvent {
     public void execute(AbstractSimulator simulator) {
         int count = simulator.getSystemCount();
         if (count == 0) {
-            simulator.setSystemCount(1);
             simulator.insert(new DequeueEvent(this.getTime() + simulator.getRandomWithPoissonDistribution(simulator.getMiu())));
-        } else {            
-            simulator.setSystemCount(count++);
-            simulator.insert(new EnqueueEvent(this.getTime() + simulator.getRandomWithPoissonDistribution(simulator.getLambda())));
         }
+        simulator.setSystemCount(count+1);
+        simulator.insert(new EnqueueEvent(this.getTime() + simulator.getRandomWithPoissonDistribution(simulator.getLambda())));
     }
 }
