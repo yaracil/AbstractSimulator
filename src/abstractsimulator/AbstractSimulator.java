@@ -33,6 +33,7 @@ public class AbstractSimulator {
     double time;
     double timeToEnd;
     String report;
+    boolean verboseReport;
     double lambda;
     double miu;
     int systemCount;
@@ -41,6 +42,7 @@ public class AbstractSimulator {
     public AbstractSimulator(double lambda, double miu) {
         this.lambda = lambda;
         this.miu = miu;
+        this.verboseReport = false;
         systemCount = 0;
         ran = new Random();
         eventsHistogram = new TreeMap<String, Integer>();
@@ -57,7 +59,7 @@ public class AbstractSimulator {
         return time;
     }
 
-    public String GenerateReport(boolean extended) {
+    public String GenerateReport() {
 
         String histogram = "";
         Set<String> keys = eventsHistogram.keySet();
@@ -67,8 +69,8 @@ public class AbstractSimulator {
             String key = it.next();
             histogram += "Evento: " + key + " se procesó " + eventsHistogram.get(key) + " veces." + '\n';
         }
-        if (extended) {
-            histogram=this.report+histogram;
+        if (verboseReport) {
+            histogram = this.report + histogram;
         }
         return histogram;
     }
@@ -81,7 +83,9 @@ public class AbstractSimulator {
             } else {
                 time = e.getTime();
                 e.execute(this);
-                report += "Ha ocurrido el evento >>>>    " + e.getTag() + "  >>>> Tiempo: " + e.getTime() + "   >>>> Elementos en el sistema: " + this.getSystemCount() + '\n';
+                if (verboseReport) {
+                    report += "Ha ocurrido el evento >>>>    " + e.getTag() + "  >>>> Tiempo: " + e.getTime() + "   >>>> Elementos en el sistema: " + this.getSystemCount() + '\n';
+                }
                 int count = 0;
                 if (eventsHistogram.containsKey(e.getTag())) {
                     count = eventsHistogram.get(e.getTag());
@@ -89,7 +93,9 @@ public class AbstractSimulator {
                 eventsHistogram.put(e.getTag(), count + 1);
             }
         }
-        report += "\n"+ "La simulación a finalizado!    >>>>    Tiempo del último evento: " + time + '\n';
+        if (verboseReport) {
+            report += "\n" + "La simulación a finalizado!    >>>>    Tiempo del último evento: " + time + '\n';
+        }
     }
 
     public void insert(AbstractEvent e) {
@@ -124,4 +130,8 @@ public class AbstractSimulator {
     public Double getMiu() {
         return miu;
     }
+
+    public void setVerboseReport(boolean verboseReport) {
+        this.verboseReport = verboseReport;
+    }    
 }
