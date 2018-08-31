@@ -7,6 +7,7 @@ package FirstSimulator;
 
 import abstractsimulator.AbstractEvent;
 import abstractsimulator.AbstractSimulator;
+import java.util.LinkedList;
 
 /**
  *
@@ -21,10 +22,18 @@ public class DequeueEvent extends AbstractEvent {
 
     @Override
     public void execute(AbstractSimulator simulator) {
-        int count=simulator.getSystemCount();
+        int count = simulator.getSystemCount();
         if (count > 1) {
-            simulator.insert(new DequeueEvent(this.getTime() + simulator.getRandomWithPoissonDistribution(simulator.getMiu())));            
+            simulator.insert(new DequeueEvent(this.getTime() + simulator.getRandomWithPoissonDistribution(simulator.getMiu())));
+        } else {
+            ((FirstSimulator) simulator).timeSystemOffTemp = this.getTime();
         }
-        simulator.setSystemCount(count-1);
+        simulator.setSystemCount(count - 1);
+
+        //Registrando el tiempo de salida
+        int eventIndex = simulator.getEventsHistogram().get(this.getTag());
+        LinkedList<Double> aux = ((FirstSimulator) simulator).timeElementHistogram.get(eventIndex);
+        aux.add(1, this.getTime());
+        ((FirstSimulator) simulator).timeElementHistogram.put(eventIndex, aux);
     }
 }

@@ -82,15 +82,17 @@ public class AbstractSimulator {
                 break;
             } else {
                 time = e.getTime();
-                e.execute(this);
-                if (verboseReport) {
-                    report += "Ha ocurrido el evento >>>>    " + e.getTag() + "  >>>> Tiempo: " + e.getTime() + "   >>>> Elementos en el sistema: " + this.getSystemCount() + '\n';
-                }
+                // Events Histogram Log
                 int count = 0;
                 if (eventsHistogram.containsKey(e.getTag())) {
                     count = eventsHistogram.get(e.getTag());
                 }
                 eventsHistogram.put(e.getTag(), count + 1);
+                //Executing
+                e.execute(this);
+                if (verboseReport) {
+                    report += "Ha ocurrido el evento >>>>    " + e.getTag() + "  >>>> Tiempo: " + e.getTime() + "   >>>> Elementos en el sistema: " + this.getSystemCount() + '\n';
+                }
             }
         }
         if (verboseReport) {
@@ -108,6 +110,10 @@ public class AbstractSimulator {
 
     public void setTimeToEnd(double timeToEnd) {
         this.timeToEnd = timeToEnd;
+    }
+
+    public double getTimeToEnd() {
+        return timeToEnd;
     }
 
     public int getSystemCount() {
@@ -133,5 +139,9 @@ public class AbstractSimulator {
 
     public void setVerboseReport(boolean verboseReport) {
         this.verboseReport = verboseReport;
-    }    
+    }
+
+    public Map<String, Integer> getEventsHistogram() {
+        return eventsHistogram;
+    }
 }
