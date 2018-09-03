@@ -32,7 +32,7 @@ public class AbstractSimulator {
     OrderedSet events;
     double time;
     double timeToEnd;
-    String report;
+    public String report;
     boolean verboseReport;
     double lambda;
     double miu;
@@ -87,12 +87,12 @@ public class AbstractSimulator {
                 if (eventsHistogram.containsKey(e.getTag())) {
                     count = eventsHistogram.get(e.getTag());
                 }
-                eventsHistogram.put(e.getTag(), count + 1);
-                //Executing
-                e.execute(this);
+                eventsHistogram.put(e.getTag(), count + 1);                
                 if (verboseReport) {
                     report += "Ha ocurrido el evento >>>>    " + e.getTag() + "  >>>> Tiempo: " + e.getTime() + "   >>>> Elementos en el sistema: " + this.getSystemCount() + '\n';
                 }
+                //Executing
+                e.execute(this);
             }
         }
         if (verboseReport) {
