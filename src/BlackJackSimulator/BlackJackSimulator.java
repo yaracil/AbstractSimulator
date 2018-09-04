@@ -14,16 +14,14 @@ import abstractsimulator.AbstractSimulator;
 public class BlackJackSimulator extends AbstractSimulator {
 
     boolean[] escenario;
-    int thirdPlayer;
-    int dealer;
+    String[] thirdPlayer = {"", "", "", ""};
+    String[] dealer = {"", "", "", ""};
     int thirdWins;
 
     public BlackJackSimulator(double lambda, double miu) {
         super(lambda, miu);
-        thirdPlayer = 0;
-        dealer = 0;
-        thirdWins = 0;
         escenario = new boolean[52];
+        thirdWins = 0;
     }
 
     void setUpDeck() {
@@ -46,19 +44,20 @@ public class BlackJackSimulator extends AbstractSimulator {
 
         simulation.setUpDeck();
         //Setting first player
-        simulation.setPlayerCards("10-E", "Q-C");
+        simulation.setPlayerCards(new String[]{"10-E", "Q-C"});
         //Setting second player
-        simulation.setPlayerCards("J-D", "3-T");
+        simulation.setPlayerCards(new String[]{"J-D", "3-T"});
         //Setting third player
-        simulation.setThirdPlayer("A-T");
+        simulation.setThirdPlayer(new String[]{"A-T"});
         //Setting dealer
-        simulation.setDealerPlayer("5-C", "5-T");
+        simulation.setDealerPlayer(new String[]{"K-C", "5-T"});
 
         simulation.setVerboseReport(true);
 
         simulation.start();
 
         System.out.print(simulation.GenerateReport());
+        System.out.println(simulation.getOtherReport());
 
     }
 
@@ -98,31 +97,106 @@ public class BlackJackSimulator extends AbstractSimulator {
         return escenario;
     }
 
-    public void setPlayerCards(int card1, int card2) {
-        escenario[card1] = true;
-        escenario[card2] = true;
+    public void setPlayerCards(String[] cards) {
+        for (int i = 0; i < cards.length; i++) {
+            if (cards[i] != "") {
+                int cardIndex = this.getCardIndex(cards[i]);
+                escenario[cardIndex] = true;
+            }
+        }
     }
 
-    public void setPlayerCards(String card1, String card2) {
-
-        int card1Index = this.getCardIndex(card1);
-        int card2Index = this.getCardIndex(card2);
-        setPlayerCards(card1Index, card2Index);
+    public void setThirdPlayer(String[] cards) {
+        this.setPlayerCards(cards);
+        for (int i = 0; i < cards.length; i++) {
+            thirdPlayer[i] = cards[i];
+        }
     }
 
-    public void setThirdPlayer(String card1) {
-        int card1Index = this.getCardIndex(card1);
-        // int card2Index = this.getValue(card2);
-        escenario[card1Index] = true;
-        thirdPlayer = this.getValue(card1);
-
+    public void setDealerPlayer(String[] cards) {
+        this.setPlayerCards(cards);
+        for (int i = 0; i < cards.length; i++) {
+            dealer[i] = cards[i];
+        }
     }
 
-    public void setDealerPlayer(String card1, String card2) {
-        int card1Index = this.getCardIndex(card1);
-        int card2Index = this.getCardIndex(card2);
-        this.setPlayerCards(card1Index, card2Index);
-        dealer = this.getValue(card1) + this.getValue(card2);
+    public int getCardsBestValue(String[] cards) {
+        int total = 0, cardValueAux = 0;
+        boolean thereIsAnA = false;
+        for (int i = 0; i < cards.length; i++) {
+            cardValueAux = this.getValue(cards[i]);
+            if (cardValueAux == 1) {
+                thereIsAnA = true;
+            }
+            total += cardValueAux;
+        }
+        if (thereIsAnA && ((total + 10) <= 21)) {
+            total += 10;
+        }
+        return total;
+    }
+
+    public String[] setsDealerNewCard(String newCard) {
+        String[] cards = new String[(dealer.length + 1)];
+        for (int i = 0; i < dealer.length; i++) {
+            cards[i] = dealer[i];
+        }
+        cards[dealer.length] = newCard;
+        return cards;
+    }
+
+    public String[] setsThirdPlayerNewCard(String newCard) {
+        String[] cards = new String[(thirdPlayer.length + 1)];
+        for (int i = 0; i < thirdPlayer.length; i++) {
+            cards[i] = thirdPlayer[i];
+        }
+        cards[thirdPlayer.length] = newCard;
+        return cards;
+    }
+
+    public String getRandomCard() {
+        String newCard = "";
+
+        do {
+            int random = ((int) (Math.random() * 52));
+            newCard = this.getCardDescription(random);
+            report += "Carta seleccionada   >>>> " + newCard + " \n";
+            if (escenario[random]) {
+                report += "Carta seleccionada incorrecta    >>>> Repitiendo..." + "\n";
+                continue;
+            } else {
+                break;
+            }
+        } while (true);
+        return newCard;
+    }
+
+    public boolean doesThirdPlayerWin(String[] thirdPlayerCards) {
+
+        int thirdPlayerValue = this.getCardsBestValue(thirdPlayerCards);
+        int dealer = this.getCardsBestValue(this.getDealer());
+
+        if (thirdPlayerValue > 21) {
+            return false;
+        } else if (thirdPlayerValue > dealer) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public boolean doesDealerWin(String[] dealerCards) {
+
+        int thirdPlayerValue = this.getCardsBestValue(this.thirdPlayer);
+        int dealer = this.getCardsBestValue(dealerCards);
+
+        if (dealer > 21) {
+            return false;
+        } else if (dealer >= thirdPlayerValue) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public int getValue(String card) {
@@ -163,12 +237,20 @@ public class BlackJackSimulator extends AbstractSimulator {
         return this.getValue(this.getCardDescription(card));
     }
 
-    public int getDealer() {
+    public String[] getDealer() {
         return dealer;
     }
 
-    public int getThirdPlayer() {
+    public String[] getThirdPlayer() {
         return thirdPlayer;
+    }
+
+    public int getThirdWins() {
+        return thirdWins;
+    }
+
+    public void setThirdWins(int thirdWins) {
+        this.thirdWins = thirdWins;
     }
 
     public String printEscenario() {
@@ -183,6 +265,13 @@ public class BlackJackSimulator extends AbstractSimulator {
             }
         }
         return descrip + "\n";
+    }
+
+    public String getOtherReport() {
+        String ret = "";
+        double probabilidad = this.getThirdWins() / (1.0 * this.getSystemCount());
+        ret += "La probabilidad de que gane el jugador 3 es de  >>>> " + probabilidad;
+        return ret;
     }
 
 }

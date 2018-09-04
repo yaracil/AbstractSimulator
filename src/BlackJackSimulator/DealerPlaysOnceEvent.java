@@ -13,9 +13,9 @@ import abstractsimulator.AbstractSimulator;
  *
  * @author IT
  */
-public class ThirdPlaysOnceEvent extends AbstractEvent {
+public class DealerPlaysOnceEvent extends AbstractEvent {
 
-    public ThirdPlaysOnceEvent(double time) {
+    public DealerPlaysOnceEvent(double time) {
         super(time);
         this.setTag("Jugador tres juega");
     }
@@ -25,22 +25,22 @@ public class ThirdPlaysOnceEvent extends AbstractEvent {
         boolean[] escenario = ((BlackJackSimulator) simulator).getEscenario();
         String newCard = ((BlackJackSimulator) simulator).getRandomCard();
 
-        String[] newHand = ((BlackJackSimulator) simulator).setsThirdPlayerNewCard(newCard);
-        boolean wins = ((BlackJackSimulator) simulator).doesThirdPlayerWin(newHand);
+        String[] newHand = ((BlackJackSimulator) simulator).setsDealerNewCard(newCard);
+        boolean wins = ((BlackJackSimulator) simulator).doesDealerWin(newHand);
         int winsCount = ((BlackJackSimulator) simulator).getThirdWins();
 
-        if (!wins) {
+        if (wins) {
             simulator.report += "Jugador 3 lost!!!" + " \n";
         } else {
             simulator.report += "Jugador 3 wins!!!" + " \n";
             ((BlackJackSimulator) simulator).setThirdWins(winsCount + 1);
 
         }
-        simulator.report += "Puntos del dealer   >>>> " + ((BlackJackSimulator) simulator).getCardsBestValue(((BlackJackSimulator) simulator).getDealer()) + " \n";
-        simulator.report += "Puntos del thirdPlayer   >>>> " + ((BlackJackSimulator) simulator).getCardsBestValue(newHand) + " \n";
+        simulator.report += "Puntos del dealer   >>>> " + ((BlackJackSimulator) simulator).getCardsBestValue(newHand) + " \n";
+        simulator.report += "Puntos del thirdPlayer   >>>> " + ((BlackJackSimulator) simulator).getCardsBestValue(((BlackJackSimulator) simulator).getThirdPlayer()) + " \n";
         // simulator.report +=((BlackJackSimulator) simulator).printEscenario();
         simulator.setSystemCount(simulator.getSystemCount() + 1);
-        simulator.insert(new ThirdPlaysOnceEvent(this.getTime() + 1));
+        simulator.insert(new DealerPlaysOnceEvent(this.getTime() + 1));
 
     }
 }
