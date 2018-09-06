@@ -5,6 +5,7 @@
  */
 package BlackJackSimulator;
 
+import abstractsimulator.AbstractEvent;
 import abstractsimulator.AbstractSimulator;
 
 /**
@@ -30,18 +31,17 @@ public class BlackJackSimulator extends AbstractSimulator {
         }
     }
 
-    void start() {
+    void start(AbstractEvent eventoInicial) {
         init();
         this.setTimeToEnd(100);
-        this.insert(new ThirdPlaysOnceEvent(0));
+        this.insert(eventoInicial);
         this.run();
     }
 
     public static void main(String[] args) {
         //        Caso 1
-        System.out.println("Iniciando simulación 1: \"El jugador 3 gana\"...");
+        System.out.println("Iniciando simulación 1: \"El jugador 3 juega\"...");
         BlackJackSimulator simulation = new BlackJackSimulator(1, 1);
-
         simulation.setUpDeck();
         //Setting first player
         simulation.setPlayerCards(new String[]{"10-E", "Q-C"});
@@ -51,11 +51,42 @@ public class BlackJackSimulator extends AbstractSimulator {
         simulation.setThirdPlayer(new String[]{"A-T"});
         //Setting dealer
         simulation.setDealerPlayer(new String[]{"K-C", "5-T"});
+        simulation.setVerboseReport(false);
+        simulation.start(new ThirdPlaysOnceEvent(0));
+        System.out.print(simulation.GenerateReport());
+        System.out.println(simulation.getOtherReport());
 
+        //      Caso 2
+        System.out.println("Iniciando simulación 2: \"El dealer juega una carta más\"...");
+        simulation = new BlackJackSimulator(1, 1);
+        simulation.setUpDeck();
+        //Setting first player
+        simulation.setPlayerCards(new String[]{"10-E", "Q-C"});
+        //Setting second player
+        simulation.setPlayerCards(new String[]{"J-D", "3-T"});
+        //Setting third player
+        simulation.setThirdPlayer(new String[]{"10-T", "K-D"});
+        //Setting dealer
+        simulation.setDealerPlayer(new String[]{"K-C", "6-T"});
+        simulation.setVerboseReport(false);
+        simulation.start(new DealerPlaysOnceEvent(0));
+        System.out.print(simulation.GenerateReport());
+        System.out.println(simulation.getOtherReport());
+
+        //      Caso 3
+        System.out.println("Iniciando simulación 3: \"Dealer puede jugar múltiples veces\"...");
+        simulation = new BlackJackSimulator(1, 1);
+        simulation.setUpDeck();
+        //Setting first player
+        simulation.setPlayerCards(new String[]{"10-E", "Q-C"});
+        //Setting second player
+        simulation.setPlayerCards(new String[]{"J-D", "3-T"});
+        //Setting third player
+        simulation.setThirdPlayer(new String[]{"10-T", "9-D"});
+        //Setting dealer
+        simulation.setDealerPlayer(new String[]{"K-C", "4-T"});
         simulation.setVerboseReport(true);
-
-        simulation.start();
-
+        simulation.start(new DealerPlaysMultipleEvent(0));
         System.out.print(simulation.GenerateReport());
         System.out.println(simulation.getOtherReport());
 
@@ -108,16 +139,14 @@ public class BlackJackSimulator extends AbstractSimulator {
 
     public void setThirdPlayer(String[] cards) {
         this.setPlayerCards(cards);
-        for (int i = 0; i < cards.length; i++) {
-            thirdPlayer[i] = cards[i];
-        }
+        thirdPlayer = cards.clone();
+        System.out.println(thirdPlayer.length);
+        System.out.println("No. "+this.getSystemCount());
     }
 
     public void setDealerPlayer(String[] cards) {
         this.setPlayerCards(cards);
-        for (int i = 0; i < cards.length; i++) {
-            dealer[i] = cards[i];
-        }
+        dealer = cards.clone();
     }
 
     public int getCardsBestValue(String[] cards) {
@@ -160,7 +189,7 @@ public class BlackJackSimulator extends AbstractSimulator {
         do {
             int random = ((int) (Math.random() * 52));
             newCard = this.getCardDescription(random);
-            report += "Carta seleccionada   >>>> " + newCard + " \n";
+            report += "Carta seleccionada   >>>> " + newCard + "  ";
             if (escenario[random]) {
                 report += "Carta seleccionada incorrecta    >>>> Repitiendo..." + "\n";
                 continue;
@@ -184,7 +213,7 @@ public class BlackJackSimulator extends AbstractSimulator {
             return false;
         }
     }
-    
+
     public boolean doesDealerWin(String[] dealerCards) {
 
         int thirdPlayerValue = this.getCardsBestValue(this.thirdPlayer);
@@ -253,6 +282,10 @@ public class BlackJackSimulator extends AbstractSimulator {
         this.thirdWins = thirdWins;
     }
 
+    public void setEscenario(boolean[] escenario) {
+        this.escenario = escenario;
+    }
+
     public String printEscenario() {
         // String numb = "";
         String descrip = "";
@@ -270,6 +303,7 @@ public class BlackJackSimulator extends AbstractSimulator {
     public String getOtherReport() {
         String ret = "";
         double probabilidad = this.getThirdWins() / (1.0 * this.getSystemCount());
+        ret += "El jugador 3 ganó " + this.getThirdWins() + " veces \n";
         ret += "La probabilidad de que gane el jugador 3 es de  >>>> " + probabilidad;
         return ret;
     }
